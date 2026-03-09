@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AsyncCommunication-Consumer": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

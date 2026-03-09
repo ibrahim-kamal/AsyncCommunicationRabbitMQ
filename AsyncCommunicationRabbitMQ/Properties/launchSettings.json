@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AsyncCommunicationRabbitMQ": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
