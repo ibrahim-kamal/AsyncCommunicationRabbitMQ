@@ -6,21 +6,23 @@ using System.Text;
 async Task Example3() {
     var factory = new ConnectionFactory(){ HostName = "localhost" };
     using var connection = await factory.CreateConnectionAsync();
-    using var channel = await connection.CreateChannelAsync();
+    for (var i = 0; i < 20; i++) { 
+        var channel = await connection.CreateChannelAsync();
 
-    var consumer = new AsyncEventingBasicConsumer(channel);
+        var consumer = new AsyncEventingBasicConsumer(channel);
 
-    consumer.ReceivedAsync += async (model, ea) => {
-        var body = ea.Body.ToArray();
+        consumer.ReceivedAsync += async (model, ea) => {
+            var body = ea.Body.ToArray();
         
-        var message = Encoding.UTF8.GetString(body);
+            var message = Encoding.UTF8.GetString(body);
 
-        //await channel.BasicRejectAsync(ea.DeliveryTag, false);
+            //await channel.BasicRejectAsync(ea.DeliveryTag, false);
 
-        Console.WriteLine(message);
-    };
+            Console.WriteLine(message);
+        };
 
-    await channel.BasicConsumeAsync("dead-Queue", false, consumer);
+        await channel.BasicConsumeAsync("quorum1", true, consumer);
+    }
 
     Console.ReadLine();
 
