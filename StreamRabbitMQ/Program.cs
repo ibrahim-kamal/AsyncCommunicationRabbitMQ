@@ -15,19 +15,30 @@ async Task StreamTest() {
     };
 
       var system = await StreamSystem.Create(config);
-    const string stream = "stream-qu";
+      const string stream = "stream-qu";
+      string reference = "DotNet 6";
 
     var consumerConfig = new ConsumerConfig(system, stream)
     {
-        Reference = "DotNet 6",
-        OffsetSpec = new OffsetTypeLast(),
-        MessageHandler = async (sourceStream, consumer, ctx, message) => {
+        Reference = reference,
+        MessageHandler = async (sourceStream, consumer, messageContext, message) => {
             Console.WriteLine($" message comming from {sourceStream} data: {Encoding.Default.GetString(message.Data.Contents.ToArray())} - consumed");
             Console.WriteLine();
+            await consumer.StoreOffset(messageContext.Offset);
             await Task.Delay(1000);
         }
 
     };
+
+    try
+    {
+        var offset = await system.QueryOffset(reference, stream);
+        consumerConfig.OffsetSpec = new OffsetTypeOffset(offset + 1);
+    }
+    catch {
+        Console.WriteLine($"the consumer {consumerConfig.Reference} diidn't store offset {stream}");
+    }
+
     var consumer = await Consumer.Create(consumerConfig);
 
     Console.WriteLine($" Press To stop");
